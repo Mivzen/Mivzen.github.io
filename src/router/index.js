@@ -1,11 +1,11 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
+import StudentTimerView from "../views/StudentTimerView.vue";
 
 const routes = [
   {
     path: "/",
-    name: "home",
-    component: HomeView,
+    name: "studentTimer",
+    component: StudentTimerView,
   },
   {
     path: "/about",
@@ -21,6 +21,8 @@ const routes = [
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
+  linkActiveClass: "active",
+  linkExactActiveClass: "active",
 });
 
 export default router;
