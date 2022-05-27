@@ -12,7 +12,7 @@
               <button type="button" class="btn btn-success" @click="startTimer" :disabled="timer != null">
                 Start
               </button>
-              <button type="button" class="btn btn-sm btn-danger" @click="stopTimer" :disabled="timer == null">
+              <button type="button" class="btn btn-danger" @click="stopTimer" :disabled="timer == null">
                 Stop
               </button>
             </div>
@@ -20,15 +20,17 @@
           <hr>
           <code class="d-block display-4 text-center">{{ timeElapsed }}</code>
           <hr>
-          <button type="button" @click="addStudent" class="btn btn-primary d-block w-100 mb-3"
+          <button type="button" @click="addStudent" class="btn btn-sm btn-primary d-block w-100 mb-3"
             :disabled="timer == null">
             Tilføj
           </button>
         </div>
         <div class="d-grid gap-2">
-          <div v-for="student in students" :key="student.id" class="d-flex align-items-center gap-3 mb-2">
+          <div v-for="(student, index) in students" :key="student.id" class="d-flex align-items-center gap-3 mb-2">
             <code class="me-2">{{ student.time }}</code>
             <input type="text" class="form-control form-control-sm" v-model="student.name" v-focus>
+            <button type="button" class="btn btn-sm btn-outline-danger d-print-none" @click="removeStudentByIndex(index)"
+              tabindex="-1">X</button>
           </div>
         </div>
       </div>
@@ -133,6 +135,9 @@ export default {
       this.minutes = 0;
       clearInterval(this.timer);
       this.timer = null;
+    },
+    removeStudentByIndex(index) {
+      this.students.splice(index, 1);
     },
   },
 };
