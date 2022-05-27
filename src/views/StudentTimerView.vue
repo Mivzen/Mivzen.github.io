@@ -37,8 +37,7 @@
 </template>
 
 <script setup>
-// https://github.com/lupas/vue3-keypress
-import { useKeypress } from "vue3-keypress";
+import { useKeypress } from "@/compositions/keypress";
 import { ref, reactive } from "vue";
 
 const students = reactive([]);
