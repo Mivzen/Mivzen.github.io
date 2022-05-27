@@ -36,41 +36,47 @@
   </div>
 </template>
 
-<script setup>
+<script>
 import { useKeypress } from "@/compositions/keypress";
 import { ref, reactive } from "vue";
 
-const students = reactive([]);
-const timeElapsed = ref("00:00:00");
-const timer = ref(null);
-
-const addStudent = (event) => {
-  if (timer.value == null) {
-    return;
-  }
-
-  let student = {
-    time: timeElapsed.value,
-    name: '',
-  };
-
-  students.push(student);
-};
-
-useKeypress({
-  keyEvent: "keydown",
-  keyBinds: [
-    {
-      keyCode: "enter",
-      success: addStudent,
-    }
-  ],
-});
-</script>
-
-<script>
 export default {
   name: "StudentTimerView",
+  setup() {
+    const students = reactive([]);
+    const timeElapsed = ref("00:00:00");
+    const timer = ref(null);
+
+    const addStudent = () => {
+      if (timer.value == null) {
+        return;
+      }
+
+      let student = {
+        time: timeElapsed.value,
+        name: '',
+      };
+
+      students.push(student);
+    };
+
+    useKeypress({
+      keyEvent: "keydown",
+      keyBinds: [
+        {
+          keyCode: "enter",
+          success: addStudent,
+        }
+      ],
+    });
+
+    return {
+      students,
+      timeElapsed,
+      timer,
+      addStudent,
+    };
+  },
   data() {
     return {
       startTime: null,
@@ -127,4 +133,4 @@ export default {
     },
   },
 };
-</script>
+</script >
