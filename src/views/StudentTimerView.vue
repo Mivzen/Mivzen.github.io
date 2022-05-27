@@ -9,11 +9,19 @@
           <div class="d-flex align-items-center">
             <code class="flex-fill">{{ startTime?.toLocaleTimeString() || "hh:mm:ss" }}</code>
             <div class="btn-group" role="group">
-              <button type="button" class="btn btn-success" @click="startTimer" :disabled="timer != null">
+              <button type="button" class="btn btn-success" @click="startTimer" :disabled="!stopped"
+                v-if="stopped && startTime == null">
                 Start
               </button>
-              <button type="button" class="btn btn-danger" @click="stopTimer" :disabled="timer == null">
+              <button type="button" class="btn btn-success" @click="continueTimer" :disabled="!stopped" v-else>
+                Forsæt
+              </button>
+              <button type="button" class="btn btn-danger" @click="stopTimer" :disabled="stopped">
                 Stop
+              </button>
+              <button type="button" class="btn btn-danger" @click="clearTimer"
+                :disabled="!stopped || startTime == null">
+                Nulstil
               </button>
             </div>
           </div>
@@ -21,7 +29,7 @@
           <code class="d-block display-4 text-center">{{ timeElapsed }}</code>
           <hr>
           <button type="button" @click="addStudent" class="btn btn-sm btn-primary d-block w-100 mb-3"
-            :disabled="timer == null">
+            :disabled="stopped">
             Tilføj
           </button>
         </div>
@@ -29,8 +37,8 @@
           <div v-for="(student, index) in students" :key="student.id" class="d-flex align-items-center gap-3 mb-2">
             <code class="me-2">{{ student.time }}</code>
             <input type="text" class="form-control form-control-sm" v-model="student.name" v-focus>
-            <button type="button" class="btn btn-sm btn-outline-danger d-print-none" @click="removeStudentByIndex(index)"
-              tabindex="-1">X</button>
+            <button type="button" class="btn btn-sm btn-outline-danger d-print-none"
+              @click="removeStudentByIndex(index)" tabindex="-1">X</button>
           </div>
         </div>
       </div>
@@ -47,11 +55,12 @@ export default {
   setup() {
     const studentSequence = ref(0);
     const students = reactive([]);
-    const timeElapsed = ref("00:00:00");
+    const timeElapsed = ref("00:00:00.000");
     const timer = ref(null);
+    const stopped = ref(true);
 
     const addStudent = () => {
-      if (timer.value == null) {
+      if (timer.value == null || stopped.value) {
         return;
       }
 
@@ -79,62 +88,58 @@ export default {
       students,
       timeElapsed,
       timer,
+      stopped,
       addStudent,
     };
   },
   data() {
     return {
       startTime: null,
-      miliseconds: 0,
-      seconds: 0,
-      minutes: 0,
     };
   },
   methods: {
-    startTimer() {
+    msToTime(s) {
+      // Pad to 2 or 3 digits, default is 2
+      function pad(n, z) {
+        z = z || 2;
+        return ('00' + n).slice(-z);
+      }
+
+      var ms = s % 1000;
+      s = (s - ms) / 1000;
+      var secs = s % 60;
+      s = (s - secs) / 60;
+      var mins = s % 60;
+      var hrs = (s - mins) / 60;
+
+      return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
+    },
+    setTimer() {
       var self = this;
-      this.startTime = new Date();
       this.timer = setInterval(() => {
-        self.miliseconds++;
-
-        if (self.miliseconds == 100) {
-          self.seconds += 1;
-          self.miliseconds = 0;
-        }
-        if (self.seconds == 60) {
-          self.minutes += 1;
-          self.seconds = 0;
-        }
-
-        let ms = self.miliseconds,
-          sec = self.seconds,
-          min = self.minutes;
-
-        if (ms < 10) {
-          ms = '0' + ms;
-        }
-        if (sec < 10) {
-          sec = '0' + sec;
-        }
-        if (min < 10) {
-          min = '0' + min;
-        }
-
-        self.timeElapsed = `${min}:${sec}:${ms}`;
+        let elapsedMilliseconds = Date.now() - self.startTime;
+        self.timeElapsed = self.msToTime(elapsedMilliseconds);
       }, 10);
     },
+    startTimer() {
+      this.stopped = false;
+      this.startTime = new Date();
+      this.setTimer();
+    },
+    continueTimer() {
+      this.stopped = false;
+      this.setTimer();
+    },
     stopTimer() {
+      this.stopped = true;
       clearInterval(this.timer);
-      this.timer = null;
     },
     clearTimer() {
+      this.stopped = true;
       this.startTime = null;
-      this.timeElapsed = "00:00:00";
-      this.miliseconds = 0;
-      this.seconds = 0;
-      this.minutes = 0;
+      this.students.splice(0);
+      this.timeElapsed = "00:00:00.000";
       clearInterval(this.timer);
-      this.timer = null;
     },
     removeStudentByIndex(index) {
       this.students.splice(index, 1);
