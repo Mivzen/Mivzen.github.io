@@ -12,7 +12,7 @@
               <button type="button" class="btn btn-success" @click="startTimer" :disabled="timer != null">
                 Start
               </button>
-              <button type="button" class="btn btn-danger" @click="stopTimer" :disabled="timer == null">
+              <button type="button" class="btn btn-sm btn-danger" @click="stopTimer" :disabled="timer == null">
                 Stop
               </button>
             </div>
@@ -26,9 +26,9 @@
           </button>
         </div>
         <div class="d-grid gap-2">
-          <div v-for="student in students" :key="student.time" class="d-flex align-items-center gap-3 mb-2">
+          <div v-for="student in students" :key="student.id" class="d-flex align-items-center gap-3 mb-2">
             <code class="me-2">{{ student.time }}</code>
-            <input type="text" class="form-control form-control-sm" v-model="student.name">
+            <input type="text" class="form-control form-control-sm" v-model="student.name" v-focus>
           </div>
         </div>
       </div>
@@ -43,6 +43,7 @@ import { ref, reactive } from "vue";
 export default {
   name: "StudentTimerView",
   setup() {
+    const studentSequence = ref(0);
     const students = reactive([]);
     const timeElapsed = ref("00:00:00");
     const timer = ref(null);
@@ -53,10 +54,12 @@ export default {
       }
 
       let student = {
+        id: studentSequence.value,
         time: timeElapsed.value,
         name: '',
       };
 
+      studentSequence.value++;
       students.push(student);
     };
 

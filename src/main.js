@@ -5,6 +5,14 @@ import store from "./store";
 
 import "./styles/site.scss";
 
-createApp(App).use(store).use(router).mount("#app");
+const app = createApp(App);
+
+app.directive('focus', {
+    mounted(el) {
+        el.focus();
+    },
+});
+
+app.use(store).use(router).mount("#app");
 
 import "bootstrap/dist/js/bootstrap.js";

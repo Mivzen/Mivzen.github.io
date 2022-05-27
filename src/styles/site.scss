@@ -3,8 +3,9 @@
 @import "functions";
 
 // Variables
-@import "../../node_modules/bootstrap/scss/variables";
 @import "variables";
+@import "../../node_modules/bootstrap/scss/variables";
+@import "../../node_modules/bootstrap/scss/maps";
 
 // Mixins
 @import "../../node_modules/bootstrap/scss/mixins";
@@ -15,6 +16,7 @@
 
 // Normalization
 @import "../../node_modules/bootstrap/scss/root";
+@import "root";
 @import "../../node_modules/bootstrap/scss/reboot";
 @import "../../node_modules/bootstrap/scss/type";
 
