@@ -2,24 +2,72 @@
   <div class="container pt-4">
     <div class="row">
       <div class="col-12 col-md-8 offset-md-2">
-        <div class="d-flex align-items-center">
-          <code class="flex-fill">{{ formatDate(startTime) || "hh:mm:ss" }}</code>
-
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-success" @click="startTimer" :disabled="startTime != null">
-              Start
-            </button>
-            <button type="button" class="btn btn-danger" @click="stopTimer" :disabled="startTime == null">
-              Stop
-            </button>
+        <div class="d-none d-print-block mb-4" v-if="startTime != null">
+          Startet klokken: {{ startTime?.toLocaleString() }}
+        </div>
+        <div class="d-print-none">
+          <div class="d-flex align-items-center">
+            <code class="flex-fill">{{ startTime?.toLocaleTimeString() || "hh:mm:ss" }}</code>
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-success" @click="startTimer" :disabled="timer != null">
+                Start
+              </button>
+              <button type="button" class="btn btn-danger" @click="stopTimer" :disabled="timer == null">
+                Stop
+              </button>
+            </div>
+          </div>
+          <hr>
+          <code class="d-block display-4 text-center">{{ timeElapsed }}</code>
+          <hr>
+          <button type="button" @click="addStudent" class="btn btn-primary d-block w-100 mb-3"
+            :disabled="timer == null">
+            Tilføj
+          </button>
+        </div>
+        <div class="d-grid gap-2">
+          <div v-for="student in students" :key="student.time" class="d-flex align-items-center gap-3 mb-2">
+            <code class="me-2">{{ student.time }}</code>
+            <input type="text" class="form-control form-control-sm" v-model="student.name">
           </div>
         </div>
-        <hr>
-        <code class="display-4 text-center">{{ timeElapsed }}</code>
       </div>
     </div>
   </div>
 </template>
+
+<script setup>
+// https://github.com/lupas/vue3-keypress
+import { useKeypress } from "vue3-keypress";
+import { ref, reactive } from "vue";
+
+const students = reactive([]);
+const timeElapsed = ref("00:00:00");
+const timer = ref(null);
+
+const addStudent = (event) => {
+  if (timer.value == null) {
+    return;
+  }
+
+  let student = {
+    time: timeElapsed.value,
+    name: '',
+  };
+
+  students.push(student);
+};
+
+useKeypress({
+  keyEvent: "keydown",
+  keyBinds: [
+    {
+      keyCode: "enter",
+      success: addStudent,
+    }
+  ],
+});
+</script>
 
 <script>
 export default {
@@ -27,8 +75,6 @@ export default {
   data() {
     return {
       startTime: null,
-      timeElapsed: "00:00:00",
-      timer: null,
       miliseconds: 0,
       seconds: 0,
       minutes: 0,
@@ -69,6 +115,7 @@ export default {
     },
     stopTimer() {
       clearInterval(this.timer);
+      this.timer = null;
     },
     clearTimer() {
       this.startTime = null;
@@ -77,15 +124,8 @@ export default {
       this.seconds = 0;
       this.minutes = 0;
       clearInterval(this.timer);
-    },
-    formatDate(dateTime) {
-      if (!dateTime) {
-        return "";
-      }
-
-      return `${dateTime.getHours()}:${dateTime.getMinutes()}:${dateTime.getSeconds()}`;
+      this.timer = null;
     },
   },
-  computed: {},
 };
 </script>

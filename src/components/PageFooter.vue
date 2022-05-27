@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-light p-3">Footer</footer>
+  <footer class="d-print-none bg-light p-3">Footer</footer>
 </template>
 
 <script>

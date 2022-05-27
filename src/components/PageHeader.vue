@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light d-print-none">
     <div class="container">
       <a class="navbar-brand" href="#">Mivsen</a>
       <button
